@@ -1,14 +1,7 @@
 package de.ddm.actors.profiling;
-
 import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.Terminated;
-import akka.actor.typed.javadsl.AbstractBehavior;
-import akka.actor.typed.javadsl.ActorContext;
-import akka.actor.typed.javadsl.Behaviors;
-import akka.actor.typed.javadsl.Receive;
-import akka.actor.typed.receptionist.Receptionist;
-import akka.actor.typed.receptionist.ServiceKey;
 import de.ddm.actors.patterns.LargeMessageProxy;
 import de.ddm.serialization.AkkaSerializable;
 import de.ddm.singletons.InputConfigurationSingleton;
@@ -17,7 +10,12 @@ import de.ddm.structures.InclusionDependency;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import akka.actor.typed.javadsl.AbstractBehavior;
+import akka.actor.typed.javadsl.ActorContext;
+import akka.actor.typed.javadsl.Behaviors;
+import akka.actor.typed.javadsl.Receive;
+import akka.actor.typed.receptionist.Receptionist;
+import akka.actor.typed.receptionist.ServiceKey;
 import java.io.File;
 import java.util.*;
 
@@ -165,14 +163,14 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
     private Behavior<Message> handle(getNeededColumnMessage getNeededColumnMessage) {
         if (getNeededColumnMessage.getBothColumns) {
             if (getNeededColumnMessage.isString) {
-                this.getContext().getLog().info("Received getNeededColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
+                this.getContext().getLog().info("Received Column from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
                 LargeMessageProxy.LargeMessage dataMessage = new DependencyWorker.
                                 ColumnReceiver(getNeededColumnMessage.getTaskId(), true, columnOfStrings.get(getCompositeKey(getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2()))
                                 , getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2(), columnOfStrings.get(getCompositeKey(getNeededColumnMessage.getKey3(), getNeededColumnMessage.getKey4()))
                                 , getNeededColumnMessage.getKey3(), getNeededColumnMessage.getKey4());
                 this.largeMessageProxy.tell(new LargeMessageProxy.SendMessage(dataMessage, this.dependencyWorkersLargeMessageProxy.get(this.dependencyWorkers.indexOf(getNeededColumnMessage.dependencyWorker))));
             } else {
-                this.getContext().getLog().info("Received getNeededColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
+                this.getContext().getLog().info("Received ColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
                 LargeMessageProxy.LargeMessage dataMessage = new DependencyWorker.
                                 ColumnReceiver(getNeededColumnMessage.getTaskId(), true, columnOfNumbers.get(getCompositeKey(getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2()))
                                 , getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2(), columnOfNumbers.get(getCompositeKey(getNeededColumnMessage.getKey3(), getNeededColumnMessage.getKey4()))
@@ -180,14 +178,14 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
                 this.largeMessageProxy.tell(new LargeMessageProxy.SendMessage(dataMessage, this.dependencyWorkersLargeMessageProxy.get(this.dependencyWorkers.indexOf(getNeededColumnMessage.dependencyWorker))));
             }
         } else if (getNeededColumnMessage.isString) {
-            this.getContext().getLog().info("Received getNeededColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
+            this.getContext().getLog().info("Received ColumnMsg from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
             LargeMessageProxy.LargeMessage dataMessage = new DependencyWorker.
                             ColumnReceiver(getNeededColumnMessage.getTaskId(), false, columnOfStrings.get(getCompositeKey(getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2()))
                             , getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2(), null, null, null);
             this.largeMessageProxy.tell(new LargeMessageProxy.SendMessage(dataMessage, this.dependencyWorkersLargeMessageProxy.get(this.dependencyWorkers.indexOf(getNeededColumnMessage.dependencyWorker))));
 
         } else {
-            this.getContext().getLog().info("Received getNeededColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
+            this.getContext().getLog().info("ReceivedgetNeededColumnMessage from worker {} for task {}!", getNeededColumnMessage.getDependencyWorker(), getNeededColumnMessage.getTaskId());
             LargeMessageProxy.LargeMessage dataMessage = new DependencyWorker.
                             ColumnReceiver(getNeededColumnMessage.getTaskId(), false, columnOfNumbers.get(getCompositeKey(getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2()))
                             , getNeededColumnMessage.getKey1(), getNeededColumnMessage.getKey2(), null, null, null);
@@ -210,7 +208,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
         return this;
     }
 
-    //TODO : not sure if this is correct
+
     private boolean allFilesHaveBeenRead() {
         for (boolean b : this.allFilesHaveBeenRead) {
             if (!b)
@@ -251,7 +249,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
             if (allFilesHaveBeenRead()) {
 
                 this.getContext().getLog().info("Size of columnOfNumbers is {} and of columOfStrings {}", columnOfNumbers.size(), columnOfStrings.size());
-                this.getContext().getLog().info("Finished reading all files! Mining will start!");
+                this.getContext().getLog().info("After reading all files! the program will start Mining!");
                 // Here we are telling the inputReader to read the next batch
                 startMining();
             }
@@ -270,7 +268,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
     }
 
     private void startMining() {
-        this.getContext().getLog().info("Starting mining!");
+        this.getContext().getLog().info("Starting to mine!");
         creatingTaskLists();
         this.getContext().getLog().info("All task are now ready to be worked on {} tasks :)", this.listOfTasks.size());
         allTasksHavebeenCreated = true;
@@ -333,7 +331,7 @@ public class DependencyMiner extends AbstractBehavior<DependencyMiner.Message> {
     }
 
     private boolean everyOneFinished() {
-        //Works by the fact that when the list is empty, it means that all the tasks have been done
+
         for (Boolean b : taskDone) {
             if (!b)
                 return false;
