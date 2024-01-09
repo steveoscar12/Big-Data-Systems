@@ -26,11 +26,11 @@ public class CompositeKey {
     }
 
     public String getSubKey1() {
-        return this.key1;
+    	return this.key1;
     }
 
     public String getSubKey2() {
-        return this.key2;
+    	return this.key2;
     }
 }
 
