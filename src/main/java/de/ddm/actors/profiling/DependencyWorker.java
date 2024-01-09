@@ -39,7 +39,7 @@ public class DependencyWorker extends AbstractBehavior<DependencyWorker.Message>
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class TaskMessage implements Message, LargeMessagePoxy.LargeMessage r{
+    public static class TaskMessage implements Message, LargeMessageProxy.LargeMessage {
         private static final long serialVersionUID = -4667745204456518160L;
         ActorRef<LargeMessageProxy.Message> dependencyMinerLargeMessageProxy;
         int taskId;
