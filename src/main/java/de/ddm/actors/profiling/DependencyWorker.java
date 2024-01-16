@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class DependencyWorker extends AbstractBehavior<DependencyWorker.Message> {
 
-    ////////////////////
+    ///////////////////
     // Actor Messages //
     ////////////////////
 
